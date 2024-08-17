@@ -1,7 +1,6 @@
 //Booking - DeleteBooking
 import http from 'k6/http';
 import { check } from 'k6';
-
 export default function () {
     // Step 1: Retrieve all booking IDs
     const getAllBookingsRes = http.get('https://restful-booker.herokuapp.com/booking');
@@ -18,13 +17,12 @@ export default function () {
         console.error('Failed to retrieve booking IDs.');
         return;  // Exit the function if retrieval fails
     }
-
     // Step 2: Delete booking using Cookie authorization
     const bookingIdToDelete1 = 4;  // Booking ID for deletion
     const deleteResCookie = http.del(`https://restful-booker.herokuapp.com/booking/${bookingIdToDelete1}`, null, {
         headers: {
             'Content-Type': 'application/json',
-            'Cookie': 'token=43191766d082335' // Replace with your actual token
+            'Cookie': 'token=d7c3f6f0cf2e26f' // Replace with your actual token
         }
     });
 
@@ -38,24 +36,6 @@ export default function () {
     } else {
         console.error(`Failed to delete Booking ID ${bookingIdToDelete1} using Cookie. Status: ${deleteResCookie.status}`);
     }
-
-    // Step 3: Delete booking using Basic Auth authorization
-    const bookingIdToDelete2 = 4;  // Another booking ID for deletion
-    const deleteResBasicAuth = http.del(`https://restful-booker.herokuapp.com/booking/${bookingIdToDelete2}`, null, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic YWRtaW46cGFzc3dvcmQxMjM=' // Replace with your actual Base64 encoded credentials
-        }
-    });
-
-    // Check if the deletion was successful using Basic Auth
-    const isDeletedWithBasicAuth = check(deleteResBasicAuth, {
-        'Booking deleted successfully using Basic Auth': (r) => r.status === 201 || r.status === 200 || r.status === 204,
-    });
-
-    if (isDeletedWithBasicAuth) {
-        console.log(`Booking ID ${bookingIdToDelete2} deleted successfully using Basic Auth.`);
-    } else {
-        console.error(`Failed to delete Booking ID ${bookingIdToDelete2} using Basic Auth. Status: ${deleteResBasicAuth.status}`);
-    }
 }
+//given token is not static.
+// note it will run sucessfully until the token is valid after that it will show forbidden and status is not 200.
